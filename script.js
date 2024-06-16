@@ -1,15 +1,15 @@
-var sequence = {}
+const sequence = {}
 var seqList = []
-var count  = 0
-var sleepTime = 300
-var intervalTime = 500
+const count  = 0
+const sleepTime = 300
+const intervalTime = 500
+const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
 function randomiseSequence(n) {
-    const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     let seq = []
     for (let i = 0; i < 30; i++) {
 	let alphIndex = Math.floor(Math.random() * 26)
@@ -20,11 +20,7 @@ function randomiseSequence(n) {
 function getRandomNumberRange(min, max) {
     let output = 1
     if (max > 0) {
-	    min = Math.floor(min)
-
-	    max = Math.floor(max)
-
-	    output = Math.random(Math.random() * (max - min + 1)) + min
+	    return Math.floor(Math.random() * (max - min + 1) + min);
     }
     return output
 }
@@ -37,9 +33,8 @@ function getRandomNumber(bound) {
     return output
 }
 
-function generateSequence(n) {
-    const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-    let seq = []
+
+function generateInitialSequence() {
     // at least 3 letters, places twice so list cant be more than 24 chars
     // We will have 3 random letters that will be duped
     // n steps apart
@@ -50,21 +45,70 @@ function generateSequence(n) {
 	let alphIndex = Math.floor(Math.random() * 26)
 	rseq.push(alphabet[alphIndex])
     }
+    console.log(`generated seq of length ${rseq.length}`)
+    return rseq
+}
+
+function cleanseSequence(n, seq) {
+    for (let i = seq.length; i >= n; i--) {
+        while (seq[i-n] == seq[i]) {
+            console.log(`found same item ${i} ${seq[i]} at ${i-n} ${seq[i-n]}, changing`)
+            let r = getRandomNumberRange(0, 25)
+            console.log(`will change to ${alphabet[r]}`)
+            seq[i] = alphabet[r]
+        }
+    }
+    return seq
+}
+
+function generateNbacks(n, rseq) {
     // because we need to insert n steps apart, we check from n -> end of list size
-    console.log(rseq)
-    let place = getRandomNumberRange(n, 24)
-    let letter = getRandomNumber(26)
-    console.log(place)
-    console.log(letter)
-    rseq.splice(place, 0, letter)
-    rseq.splice(place-n, 0, letter)
-    console.log(rseq)
-    place = getRandomNumberRange(n, 24)
-    letter = alphabet[getRandomNumber(26)]
-    console.log(place)
-    console.log(letter)
-    let n2 = rseq.splice(getRandomNumberRange(n, 26), 0, alphabet[getRandomNumber(26)])
-    let n3 = rseq.splice(getRandomNumberRange(n, 28), 0, alphabet[getRandomNumber(26)])
+    let takenSlots = []
+    let place = 0
+    let letter = 0
+    let counter = 0
+    for (let i = 0; i < 3; i++) {
+        console.log(rseq)
+        place = getRandomNumberRange(n, 23+counter-n)
+        letter = getRandomNumberRange(0, 25)
+        while (takenSlots.includes(place) || takenSlots.includes(place+n)) {
+            console.log(`place is ${place} and n-bump is ${[place+n]}, finding another spot`)
+            place = getRandomNumberRange(n, 23+counter-n)
+        }
+        for (let x = place; x <= place+n; x++) {
+            takenSlots.push(x)
+        }
+        counter = counter + 2
+        console.log(place)
+        console.log(letter)
+        console.log(alphabet[letter])
+        rseq.splice(place, 0, alphabet[letter])
+        console.log(place+n)
+        rseq.splice(place+n, 0, alphabet[letter])
+        console.log(rseq)
+    }
+    // console.log(rseq)
+    // let place = getRandomNumberRange(n, 24)
+    // let letter = getRandomNumberRange(0, 25)
+    // console.log(place)
+    // console.log(letter)
+    // console.log(alphabet[25])
+    // rseq.splice(place, 0, alphabet[letter])
+    // rseq.splice(place-n-1, 0, alphabet[letter])
+    
+    // place = getRandomNumberRange(n, 24)
+    // letter = getRandomNumberRange(0, 25)
+    // console.log(place)
+    // console.log(letter)
+    // console.log(alphabet[25])
+    // rseq.splice(place, 0, alphabet[letter])
+    // rseq.splice(place-n-1, 0, alphabet[letter])
+
+
+
+    // rseq.splice(getRandomNumberRange(n, 26), 0, alphabet[getRandomNumberRange(0,25)])
+    // let n3 = rseq.splice(getRandomNumberRange(n, 28), 0, alphabet[getRandomNumberRange(0,25)])
+    // console.log(rseq)
     return rseq
 }
 
@@ -129,7 +173,12 @@ function randomiseTiles(seq) {
 
 async function wrapper() {
     await initBoard()
-    generateSequence(2)
+    let n = 2
+    let seq = generateInitialSequence()
+    console.log(seq)
+    let cleanSeq = cleanseSequence(n, seq)
+    console.log(cleanSeq)
+    let Fullseq = generateNbacks(n, cleanSeq)
     seqList = randomiseTiles(seqList)
     let animationInterval;
     document.getElementsByClassName("initiate")[0].children[0].addEventListener("click", function() {
