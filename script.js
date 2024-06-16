@@ -1,6 +1,6 @@
-const sequence = {}
+var sequence = {}
 var seqList = []
-const count  = 0
+var count  = 0
 const sleepTime = 300
 const intervalTime = 500
 const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
