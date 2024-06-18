@@ -1,8 +1,8 @@
 var sequence = {}
 var seqList = []
 var count  = 0
-const sleepTime = 300
-const intervalTime = 500
+const sleepTime = 700
+const intervalTime = 1000
 const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -148,6 +148,10 @@ async function animation() {
     console.log(coords[0], coords[1]);
 }
 
+async function sound() {
+    //play sound here
+}
+
 function resetSquares() {
     const blackB = {
 	border: "2px solid gray"
@@ -193,6 +197,7 @@ async function wrapper() {
 	    count = 0
 	    animationInterval = setInterval( function () {
 		animation()
+        sound()
 		count ++; 
 		if (count >= 30){
 		    clearInterval(animationInterval)
